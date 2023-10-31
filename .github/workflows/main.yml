@@ -31,21 +31,26 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
+        
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v1.1.1
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
-      - name: Configure Google Cloud SDK
-        run: gcloud --quiet config set project storage-app-0001
-      - name: Authenticate with GKE
+      
+      - name: setup-gke-gcloud-auth-plugin
+        uses: simenandre/setup-gke-gcloud-auth-plugin@v1.1.2
+      
+      - name: kubeconfig
         run: gcloud container clusters get-credentials my-gek-cluster --zone us-central1-c --project storage-app-0001
+
       - name: Clone gcp-cicd-terraform repository
         run: |
           git clone https://github.com/igor-rl/gcp-cicd-terraform.git
+
       - name: Deploy to Kubernetes cluster in Another Repository
         uses: Azure/k8s-deploy@v4.9
         with:
           manifests: |
             gcp-cicd-terraform/gcp/my-cluster-gke/k8s/projects/storage-app/storage-app-back/
           images: |
-            igorlage/storage-app-back:0.0.0
+            igorlage/storage-app-back:0.0.${{ github.run_number }}
