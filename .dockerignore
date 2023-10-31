@@ -1,0 +1,8 @@
+node_modules
+dist
+.env
+*.log
+.npm-cache
+ddroid.sh
+docker-compose-prod.yaml
+docker-compose.yaml

@@ -1,0 +1,29 @@
+version: "3.5"
+services:
+  nestjs:
+    build:
+      dockerfile: Dockerfile.dev
+    container_name: nestjs
+    restart: always
+    tty: true
+    ports:
+      - "3000:3000"
+    environment:
+      API_PORT: 3000
+      INSTANCE_HOST: db
+      DB_PORT: 5432
+      DB_NAME: postgres
+      DB_USER: root
+      DB_PASS: root
+      ssynchronize: 0
+      logging: 1
+      NODE_ENV: dev
+      # keycloak
+      JWT_SECRET: "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAl1DgBpXLXdJVox5N3vk87eIMjBu70bHcgaowq+UZbfxQLGnwp6Z9XhZRv6PYGZMViZ1GSV5jyWqVUYKgYR52bBpBUfW5FnskCwcD/bpSW7ug4Jp8yN+XO7hPy/MYRNzKtJw7VQ+M9vmsXphEQdDSb55X3wgG+9OvZov10zhlfR9+AU7mdZOPmHUbr+Tol6HWNXLhxmPOX5ehEpLJau3qn1inIJ0WaaABxZhfVlca42wZ3q1Q2Je+ACIgEBbzT3zkMIj6aYUuzWMrluBAgtcoFIP3Fw0aN/MUbG0EtV8tzXRnLh0JW9UA8AkLKPdkwvpnyCzyW34HYHH0ayyPN18p6QIDAQAB\n-----END PUBLIC KEY-----"
+      KC_HOST: https://dev-login.exfranquias.com.br
+      KC_REALM: exsistemas_realm
+      KC_CLIENT_ID: painel_back_client
+      KC_CLIENT_SECRET: MSbEiKm76STvW8pehYN3n3LSXyMwnQaX
+    volumes:
+      - ./:/home/node/app
+    command: npm run start:dev
