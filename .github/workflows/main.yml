@@ -39,6 +39,6 @@ jobs:
         uses: Azure/k8s-deploy@v4.9
         with:
           manifests: |
-            igor-rl/gcp/my-cluster-gke/k8s/projects/storage-app/storage-app-back/
+            igor-rl/gcp-cicd-terraform/gcp/my-cluster-gke/k8s/projects/storage-app/storage-app-back/
           images: |
             igorlage/storage-app-back:0.0.${{ github.run_number }}
