@@ -39,7 +39,7 @@ jobs:
         run: gcloud container clusters get-credentials my-gek-cluster --zone us-central1-c --project storage-app-0001
       - name: Clone gcp-cicd-terraform repository
         run: |
-          git clone https://github.com/igor-rl/cp-cicd-terraform.git
+          git clone https://github.com/igor-rl/gcp-cicd-terraform.git
       - name: Deploy to Kubernetes cluster in Another Repository
         uses: Azure/k8s-deploy@v4.9
         with:
