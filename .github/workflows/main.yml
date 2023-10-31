@@ -2,49 +2,43 @@ name: CI-CD
 
 on:
   push:
-    branches: ["master"]
+    branches: ['master']
   workflow_dispatch:
 
 jobs:
   CI:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4.1.1
-    - name: Docker Login
-      uses: docker/login-action@v1
-      with:
-        username: ${{ secrets.DOCKER_HUB_USERNAME }}
-        password: ${{ secrets.DOCKER_HUB_PASSWORD }}
-      
-    - name: Build and push Docker images
-      uses: docker/build-push-action@v2
-      with:
-        context: .
-        file: Dockerfile
-        push: true
-        tags: igorlage/storage-app-back:0.0.${{ github.run_number }},igorlage/storage-app-back:latest
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+      - name: Docker Login
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
-  # CD:
-  #   runs-on: ubuntu-latest
-  #   needs: [CI]
-  #   steps:
-  #   - name: Checkout
-  #     uses: actions/checkout@v4.1.1
-  #   - name: Configure AWS Credentials
-  #     uses: aws-actions/configure-aws-credentials@v4
-  #     with:
-  #       aws-region: us-east-1
-  #       aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #       aws-secret-access-key: ${{ secrets.AWS_ACCESS_KEY }}
-  #   - name: kubeconfig
-  #     run: aws eks update-kubeconfig --name eks-imersao --region us-east-1
-  #   - name: Deploy to Kubernetes cluster
-  #     uses: Azure/k8s-deploy@v4.9
-  #     with:
-  #       manifests: |
-  #         ./kube-news/k8s/
-  #       images: |
-  #         igorlage/kube-news:v0.0.${{ github.run_number }}
-    
-    
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: igorlage/storage-app-back:0.0.${{ github.run_number }},igorlage/storage-app-back:latest
+
+  CD:
+    runs-on: ubuntu-latest
+    needs: [CI]
+    steps:
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1.1.1
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+      - name: kubeconfig
+        run: gcloud container clusters get-credentials my-gek-cluster --zone us-central1-c --project storage-app-0001
+      - name: Deploy to Kubernetes cluster in Another Repository
+        uses: Azure/k8s-deploy@v4.9
+        with:
+          manifests: |
+            igor-rl/gcp/my-cluster-gke/k8s/projects/storage-app/storage-app-back/
+          images: |
+            igorlage/storage-app-back:0.0.${{ github.run_number }}
