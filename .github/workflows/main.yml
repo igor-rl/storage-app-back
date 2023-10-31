@@ -6,24 +6,24 @@ on:
   workflow_dispatch:
 
 jobs:
-  # CI:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4.1.1
-  #     - name: Docker Login
-  #       uses: docker/login-action@v1
-  #       with:
-  #         username: ${{ secrets.DOCKER_HUB_USERNAME }}
-  #         password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+  CI:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+      - name: Docker Login
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
-  #     - name: Build and push Docker images
-  #       uses: docker/build-push-action@v2
-  #       with:
-  #         context: .
-  #         file: Dockerfile
-  #         push: true
-  #         tags: igorlage/storage-app-back:0.0.${{ github.run_number }},igorlage/storage-app-back:latest
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: igorlage/storage-app-back:0.0.${{ github.run_number }},igorlage/storage-app-back:latest
 
   CD:
     runs-on: ubuntu-latest
@@ -31,7 +31,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
-        
+
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v1.1.1
         with:
@@ -53,4 +53,4 @@ jobs:
           manifests: |
             gcp-cicd-terraform/gcp/my-cluster-gke/k8s/projects/storage-app/storage-app-back/
           images: |
-            igorlage/storage-app-back:0.0.${{ github.run_number }}
+            docker.io/igorlage/storage-app-back:0.0${{ github.run_number }}
