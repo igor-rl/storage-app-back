@@ -21,7 +21,7 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         context: .
-        file: .Dockerfile
+        file: Dockerfile
         push: true
         tags: igorlage/storage-app-back:0.0.${{ github.run_number }},igorlage/storage-app-back:latest
 
