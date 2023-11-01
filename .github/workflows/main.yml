@@ -1,56 +1,15 @@
-name: CI-CD
+name: Storage Build and Push
 
 on:
-  push:
-    branches: ['master']
+  pull_request:
+    branches: ["main"]
   workflow_dispatch:
 
 jobs:
+
   CI:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4.1.1
-      - name: Docker Login
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
-
-      - name: Build and push Docker images
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: Dockerfile
-          push: true
-          tags: igorlage/storage-app-back:0.0.${{ github.run_number }},igorlage/storage-app-back:latest
-
-  CD:
-    runs-on: ubuntu-latest
-    needs: [CI]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4.1.1
-
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v1.1.1
-        with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
-      
-      - name: setup-gke-gcloud-auth-plugin
-        uses: simenandre/setup-gke-gcloud-auth-plugin@v1.1.2
-      
-      - name: kubeconfig
-        run: gcloud container clusters get-credentials my-gek-cluster --zone us-central1-c --project storage-app-0001
-
-      - name: Clone gcp-cicd-terraform repository
-        run: |
-          git clone https://github.com/igor-rl/gcp-cicd-terraform.git
-
-      - name: Deploy to Kubernetes cluster in Another Repository
-        uses: Azure/k8s-deploy@v4.9
-        with:
-          manifests: |
-            gcp-cicd-terraform/gcp/my-cluster-gke/k8s/projects/storage-app/storage-app-back/
-          images: |
-            docker.io/igorlage/storage-app-back:0.0.${{ github.run_number }}
+    uses: storage-app-br/.github/.github/workflows/storage-build.yml@main
+    with:
+      image_version: "0.1.${{ github.run_number }}"
+      docker_hub_username: ${{ secrets.DOCKER_HUB_USERNAME }}
+      docker_hub_password: ${{ secrets.DOCKER_HUB_PASSWORD }}
