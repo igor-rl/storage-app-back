@@ -10,7 +10,7 @@ jobs:
   CI:
     uses: storage-app-br/.github/.github/workflows/storage-build.yml@main
     with:
-      image_version: "0.1.${{ github.run_number }}"
+      image_version: "0.1.0"
       image_name: $IMAGE_NAME
       docker_hub_username: ${{ secrets.DOCKER_HUB_USERNAME }}
       docker_hub_password: ${{ secrets.DOCKER_HUB_PASSWORD }}
